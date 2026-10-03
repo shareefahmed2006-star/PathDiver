@@ -1,0 +1,3239 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PathDiver — Intelligent File Traversal & Storage Manager</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+/* ==========================================================================
+   PathDiver 2.0 — Modern Design System & Component Styles
+   ========================================================================== */
+
+:root {
+  /* Primary Brand Accent (Clean Indigo) */
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: #eef2ff;
+  --primary-border: #c7d2fe;
+  --primary-glow: rgba(79, 70, 229, 0.15);
+
+  /* Semantic Feedback Colors */
+  --success: #10b981;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-hover: #dc2626;
+
+  /* Light Theme Surfaces & Text */
+  --bg-app: #f8fafc;
+  --surface-card: #ffffff;
+  --surface-hover: #f1f5f9;
+  --surface-inset: #f8fafc;
+  
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --text-inverse: #ffffff;
+
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --border-focus: #818cf8;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-popover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+  
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  --primary: #6366f1;
+  --primary-hover: #818cf8;
+  --primary-light: rgba(99, 102, 241, 0.15);
+  --primary-border: rgba(99, 102, 241, 0.3);
+  --primary-glow: rgba(99, 102, 241, 0.25);
+
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.12);
+  --success-border: rgba(52, 211, 153, 0.25);
+
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.12);
+  --warning-border: rgba(251, 191, 36, 0.25);
+
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.12);
+  --danger-border: rgba(248, 113, 113, 0.25);
+  --danger-hover: #ef4444;
+
+  --bg-app: #090d16;
+  --surface-card: #131b2e;
+  --surface-hover: #1e293b;
+  --surface-inset: #0c1220;
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-inverse: #0f172a;
+
+  --border: #1e293b;
+  --border-light: #162032;
+  --border-focus: #6366f1;
+
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+  --shadow-popover: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+}
+
+/* Global Reset & Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ==========================================================================
+   1. Navbar
+   ========================================================================== */
+.navbar {
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.brand-title {
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.version-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+}
+
+.brand-tagline {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Nav Action Button */
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.nav-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-main);
+  border-color: var(--border-focus);
+}
+
+.nav-btn.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Segmented Theme Switcher */
+.theme-switch {
+  display: inline-flex;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  padding: 3px;
+  border-radius: var(--radius-full);
+}
+
+.theme-seg {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition);
+}
+
+.theme-seg.active {
+  background: var(--surface-card);
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Backend Pill */
+.backend-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 600;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+/* ==========================================================================
+   2. Main Layout & Cards
+   ========================================================================== */
+.app-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+.section-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-icon {
+  font-size: 18px;
+}
+
+/* Welcome Hero Card */
+.welcome-card {
+  background: linear-gradient(135deg, var(--surface-card) 0%, var(--primary-light) 100%);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.welcome-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.welcome-heading {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.welcome-sub {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  max-width: 820px;
+}
+
+.welcome-dismiss {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.welcome-dismiss:hover {
+  color: var(--text-main);
+  background: var(--surface-hover);
+}
+
+/* ==========================================================================
+   3. Scope Selection & Pills
+   ========================================================================== */
+.scope-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.scope-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.scope-pill:hover {
+  background: var(--surface-hover);
+  color: var(--text-main);
+  border-color: var(--border-focus);
+}
+
+.scope-pill.active {
+  background: var(--primary);
+  color: var(--text-inverse);
+  border-color: var(--primary);
+  box-shadow: var(--primary-glow);
+}
+
+.custom-path-bar {
+  display: none;
+  margin-top: 14px;
+  gap: 10px;
+  align-items: center;
+}
+
+.custom-path-bar.show {
+  display: flex;
+}
+
+.input-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 14px;
+  font-size: 15px;
+  color: var(--text-dim);
+}
+
+.mono-input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-main);
+  outline: none;
+  transition: var(--transition);
+}
+
+.mono-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+  background: var(--surface-card);
+}
+
+/* ==========================================================================
+   4. Action Cards ("What would you like to do?")
+   ========================================================================== */
+.action-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.action-card {
+  background: var(--surface-inset);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.action-card:hover {
+  background: var(--surface-card);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.action-card.active {
+  background: var(--surface-card);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary), var(--shadow-md);
+}
+
+.tool-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+}
+
+.action-card.active .tool-icon-wrap {
+  background: var(--primary-light);
+  border-color: var(--primary-border);
+}
+
+.tool-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.tool-desc {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.tool-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   5. Scan Control Bar
+   ========================================================================== */
+.scan-control-card {
+  background: var(--surface-card);
+  border-left: 4px solid var(--primary);
+}
+
+.scan-bar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.scan-folder-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scan-status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+}
+
+.scan-status-dot.scanning {
+  background: #f59e0b;
+  box-shadow: 0 0 10px #f59e0b;
+  animation: pulse-dot 1.2s infinite;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.scan-folder-name {
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--text-main);
+  letter-spacing: -0.3px;
+}
+
+.scan-folder-status {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.scan-actions-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.scan-progress-wrap {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background: var(--surface-inset);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 35%;
+  background: linear-gradient(90deg, var(--primary) 0%, #818cf8 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+  animation: indeterminate-glow 2s infinite linear;
+}
+
+@keyframes indeterminate-glow {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+/* ==========================================================================
+   6. Dashboard Summary Card
+   ========================================================================== */
+.dashboard-card {
+  background: var(--surface-card);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.dash-title {
+  font-weight: 800;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-main);
+}
+
+.dash-time {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.stat-tile {
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.stat-tile:hover {
+  background: var(--surface-card);
+  border-color: var(--primary-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--primary);
+  font-family: var(--font-mono);
+  letter-spacing: -0.5px;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.dash-shortcuts-bar {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dash-shortcuts-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.dash-shortcuts-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   7. Search Bar & Filter Popover
+   ========================================================================== */
+.search-filter-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.search-input-box {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-dim);
+  font-size: 15px;
+}
+
+.search-input-box input {
+  width: 100%;
+  padding: 12px 38px 12px 42px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-inset);
+  font-size: 13.5px;
+  color: var(--text-main);
+  outline: none;
+  transition: var(--transition);
+}
+
+.search-input-box input:focus {
+  border-color: var(--primary);
+  background: var(--surface-card);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.filter-dropdown-wrap {
+  position: relative;
+}
+
+.filter-badge {
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--primary);
+  color: var(--text-inverse);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  margin-left: 4px;
+}
+
+.filter-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 320px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-popover);
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.filter-popover-title {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--text-main);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-chip {
+  border: 1px solid var(--border);
+  background: var(--surface-inset);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.filter-chip:hover {
+  background: var(--surface-hover);
+  color: var(--text-main);
+}
+
+.filter-chip.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary-border);
+}
+
+.filter-toggle-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.filter-toggle-label input {
+  margin-top: 3px;
+  accent-color: var(--primary);
+}
+
+.filter-popover-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* ==========================================================================
+   8. Results Cards & Single-Row Presentation
+   ========================================================================== */
+.results-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-dim);
+}
+
+.empty-icon {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.empty-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.empty-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Result Row Card */
+.result-card {
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.result-card:hover {
+  background: var(--surface-card);
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-sm);
+}
+
+.result-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.result-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.result-title-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-filename {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--text-main);
+}
+
+.result-size {
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.result-snippet {
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  color: var(--primary);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Smart Peek Drawer */
+.peek-drawer {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 6px;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.peek-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--primary);
+}
+
+.peek-drawer-summary {
+  font-size: 12.5px;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.peek-drawer-snippet {
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: var(--surface-inset);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  max-height: 120px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+/* ==========================================================================
+   9. Duplicate Cluster Presentation
+   ========================================================================== */
+.dup-cluster-card {
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.dup-cluster-header {
+  background: var(--surface-card);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dup-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.dup-badge-original {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
+
+.dup-badge-exact {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+.dup-badge-edited {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+}
+
+.dup-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+  gap: 12px;
+}
+
+.dup-file-row:last-child {
+  border-bottom: none;
+}
+
+.dup-file-row.role-exact {
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.dup-file-row.role-edited {
+  background: rgba(245, 158, 11, 0.02);
+}
+
+/* ==========================================================================
+   10. Organizer & Sweeper Cards
+   ========================================================================== */
+.organize-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.organize-cat-card {
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.organize-cat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 13.5px;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.organize-file-list {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Sweeper Table */
+.sweeper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.sweeper-row-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.sweeper-name {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--text-main);
+}
+
+.sweeper-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   11. Developer / Technical View (Progressive Disclosure)
+   ========================================================================== */
+.dev-section {
+  border-top: 2px dashed var(--primary);
+  background: var(--surface-card);
+}
+
+.dev-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dev-title {
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+}
+
+.dev-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.speed-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+}
+
+.speed-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-right: 2px;
+}
+
+.speed-pill {
+  border: none;
+  background: transparent;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.speed-pill.active {
+  background: var(--primary);
+  color: var(--text-inverse);
+}
+
+.stack-box {
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.stack-box-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.stack-chips-track {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.stack-chip {
+  background: var(--surface-card);
+  border: 1px solid var(--primary-border);
+  color: var(--primary);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stack-empty-msg {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.dev-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 860px) {
+  .dev-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tree-panel, .log-panel {
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  max-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tree-panel-header, .log-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.tree-filter-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-card);
+  font-size: 12px;
+  color: var(--text-main);
+  outline: none;
+  margin-bottom: 8px;
+}
+
+.tree-body, .log-console {
+  flex: 1;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.tree-node-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tree-node-row:hover {
+  background: var(--surface-hover);
+}
+
+.tree-node-row.state-stacked {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--primary);
+}
+
+.tree-node-row.state-current {
+  background: rgba(245, 158, 11, 0.25);
+  font-weight: 700;
+}
+
+.log-entry {
+  padding: 2px 0;
+  color: var(--text-muted);
+}
+
+.log-entry.log-sys { color: var(--text-muted); }
+.log-entry.log-find { color: var(--primary); }
+.log-entry.log-dup { color: var(--warning); }
+.log-entry.log-success { color: var(--success); }
+
+/* ==========================================================================
+   12. Buttons & Form Controls
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: var(--transition);
+  font-size: 13px;
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-inverse);
+  box-shadow: 0 1px 2px 0 rgba(79, 70, 229, 0.3);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 4px 8px 0 rgba(79, 70, 229, 0.4);
+}
+
+.btn-secondary {
+  background: var(--surface-inset);
+  color: var(--text-main);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-focus);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.btn-ghost:hover {
+  color: var(--text-main);
+  background: var(--surface-hover);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-main);
+}
+
+.btn-outline:hover {
+  background: var(--surface-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: var(--text-inverse);
+}
+
+.btn-danger:hover {
+  background: var(--danger-hover);
+}
+
+.btn-danger.btn-outline {
+  background: transparent;
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.btn-danger.btn-outline:hover {
+  background: var(--danger-bg);
+}
+
+.btn-lg {
+  padding: 10px 20px;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   13. Bottom Status Bar
+   ========================================================================== */
+.status-bar {
+  background: var(--surface-card);
+  border-top: 1px solid var(--border);
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.status-brand {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.status-sep {
+  color: var(--border);
+  margin: 0 8px;
+}
+
+</style>
+</head>
+<body>
+
+  <!-- Top App Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="brand-logo">🌊</div>
+        <div class="brand-text">
+          <div class="brand-title">PathDiver <span class="version-badge">v2.0</span></div>
+          <div class="brand-tagline">Find, organize and clean your files intelligently.</div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Developer View Toggle -->
+        <button id="toggle-dev-mode" class="nav-btn" title="Toggle Developer / DFS Stack View">
+          <span class="nav-btn-icon">⚙️</span>
+          <span class="nav-btn-text">Technical Details</span>
+        </button>
+
+        <!-- Segmented Light/Dark Switcher -->
+        <div class="theme-switch" role="radiogroup" aria-label="Theme switcher">
+          <button id="theme-btn-light" class="theme-seg active" data-theme="light" title="Switch to Light Theme">
+            <span>☀️</span> <span>Light</span>
+          </button>
+          <button id="theme-btn-dark" class="theme-seg" data-theme="dark" title="Switch to Dark Theme">
+            <span>🌙</span> <span>Dark</span>
+          </button>
+        </div>
+
+        <!-- Backend Status Indicator -->
+        <div class="backend-pill" id="backend-status-pill" title="Backend Status">
+          <span class="status-dot"></span>
+          <span id="backend-status-label">Connecting...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-layout">
+
+    <main class="main-content">
+
+      <!-- 1. Welcome Hero Banner (Friendly First Launch) -->
+      <section class="welcome-card" id="welcome-card">
+        <div class="welcome-left">
+          <div class="welcome-badge">👋 WELCOME TO PATHDIVER</div>
+          <h1 class="welcome-heading">Keep your storage clean, searchable & organized.</h1>
+          <p class="welcome-sub">Deep search inside documents and code, identify identical or edited duplicates, sort loose downloads with 1-click reversible undo, and reclaim developer cache space.</p>
+        </div>
+        <button class="welcome-dismiss" id="btn-dismiss-welcome" title="Dismiss banner">✕</button>
+      </section>
+
+      <!-- 2. "Choose a folder to scan" Section -->
+      <section class="section-card scope-section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="section-icon">📁</span>
+            <span>Where do you want to look?</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btn-toggle-custom-path">
+            <span>✏️ Custom Path</span>
+          </button>
+        </div>
+
+        <div class="scope-pills" id="scope-pills-bar">
+          <button class="scope-pill active" data-scope="downloads">
+            <span class="pill-icon">📥</span>
+            <span>Downloads</span>
+          </button>
+          <button class="scope-pill" data-scope="documents">
+            <span class="pill-icon">📄</span>
+            <span>Documents</span>
+          </button>
+          <button class="scope-pill" data-scope="desktop">
+            <span class="pill-icon">🖥️</span>
+            <span>Desktop</span>
+          </button>
+          <button class="scope-pill" data-scope="pictures">
+            <span class="pill-icon">🖼️</span>
+            <span>Pictures</span>
+          </button>
+          <button class="scope-pill" data-scope="drive-c">
+            <span class="pill-icon">💻</span>
+            <span>C:\ Drive</span>
+          </button>
+          <button class="scope-pill" data-scope="all-disks">
+            <span class="pill-icon">💽</span>
+            <span>All Disks</span>
+          </button>
+          <button class="scope-pill" data-scope="scratch">
+            <span class="pill-icon">🧪</span>
+            <span>Scratch</span>
+          </button>
+        </div>
+
+        <!-- Custom Path Bar (Collapsible / Expandable) -->
+        <div class="custom-path-bar" id="custom-path-bar">
+          <div class="input-wrap">
+            <span class="input-prefix">📂</span>
+            <input type="text" id="target-folder-input" class="mono-input" placeholder="Enter path e.g. C:\Users\Shareef\Projects or click a quick folder above..." value="">
+          </div>
+          <button class="btn btn-secondary" id="btn-load-custom-path">
+            <span>🔄</span> Load Path
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. "What would you like to do?" (4 Core Feature Cards) -->
+      <section class="section-card actions-section">
+        <div class="section-title" style="margin-bottom: 14px;">
+          <span class="section-icon">⚡</span>
+          <span>What would you like to do?</span>
+        </div>
+
+        <div class="action-cards-grid">
+          <!-- Card 1: Find & Peek -->
+          <div class="action-card active" data-tool="find" id="tool-card-find">
+            <div class="tool-icon-wrap tool-find">🔎</div>
+            <div class="tool-info">
+              <div class="tool-title">Find & Peek</div>
+              <div class="tool-desc">Find files quickly by name, type, or inside document text.</div>
+            </div>
+            <button class="tool-action-btn">
+              <span>Search Files</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- Card 2: Duplicate Detector -->
+          <div class="action-card" data-tool="duplicates" id="tool-card-duplicates">
+            <div class="tool-icon-wrap tool-dup">♻️</div>
+            <div class="tool-info">
+              <div class="tool-title">Duplicate Detector</div>
+              <div class="tool-desc">Detect exact copies and edited image/document drafts.</div>
+            </div>
+            <button class="tool-action-btn">
+              <span>Find Duplicates</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- Card 3: 1-Click Organizer -->
+          <div class="action-card" data-tool="organize" id="tool-card-organize">
+            <div class="tool-icon-wrap tool-organize">📂</div>
+            <div class="tool-info">
+              <div class="tool-title">1-Click Organizer</div>
+              <div class="tool-desc">Sort messy downloads into folders with 100% reversible undo.</div>
+            </div>
+            <button class="tool-action-btn">
+              <span>Organize Files</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- Card 4: Cache Sweeper -->
+          <div class="action-card" data-tool="sweeper" id="tool-card-sweeper">
+            <div class="tool-icon-wrap tool-sweeper">🧹</div>
+            <div class="tool-info">
+              <div class="tool-title">Cache Sweeper</div>
+              <div class="tool-desc">Prune node_modules, .venv, and build bloat in &lt;2s.</div>
+            </div>
+            <button class="tool-action-btn">
+              <span>Clean Cache</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Active Scan Execution & Status Card -->
+      <section class="section-card scan-control-card">
+        <div class="scan-bar-top">
+          <div class="scan-folder-info">
+            <span class="scan-status-dot ready" id="scan-status-dot"></span>
+            <div>
+              <div class="scan-folder-name" id="scan-folder-display">Downloads</div>
+              <div class="scan-folder-status" id="scan-state-label">Ready to scan</div>
+            </div>
+          </div>
+
+          <div class="scan-actions-group">
+            <button class="btn btn-primary btn-lg" id="btn-main-scan">
+              <span>▶</span> <span id="btn-scan-text">Start Scan</span>
+            </button>
+            <button class="btn btn-secondary" id="btn-main-pause" style="display: none;">
+              <span>⏸</span> Pause
+            </button>
+            <button class="btn btn-danger btn-outline" id="btn-main-stop" style="display: none;">
+              <span>⏹</span> Stop
+            </button>
+          </div>
+        </div>
+
+        <!-- Scanning Progress Bar -->
+        <div class="scan-progress-wrap" id="scan-progress-wrap" style="display: none;">
+          <div class="progress-labels">
+            <span id="scan-live-action">Scanning directories...</span>
+            <span id="scan-live-count">0 files found</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar-fill" id="scan-progress-fill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Dashboard Summary Card -->
+      <section class="section-card dashboard-card" id="dashboard-card" style="display: none;">
+        <div class="dashboard-header">
+          <div class="dash-title">
+            <span>✨</span>
+            <span>Scan Overview</span>
+          </div>
+          <div class="dash-time" id="dash-time-elapsed">0.12s</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-tile">
+            <div class="stat-icon">📄</div>
+            <div class="stat-value" id="stat-files">0</div>
+            <div class="stat-label">Files Analyzed</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon">📁</div>
+            <div class="stat-value" id="stat-folders">0</div>
+            <div class="stat-label">Directories Scanned</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon">♻️</div>
+            <div class="stat-value" id="stat-duplicates">0</div>
+            <div class="stat-label">Duplicate Clusters</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon">💾</div>
+            <div class="stat-value" id="stat-space">0 B</div>
+            <div class="stat-label">Analyzed Space</div>
+          </div>
+        </div>
+
+        <div class="dash-shortcuts-bar">
+          <span class="dash-shortcuts-label">What would you like to do?</span>
+          <div class="dash-shortcuts-btns">
+            <button class="btn btn-secondary btn-sm" onclick="switchTool('find')">🔎 Search Files</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchTool('duplicates')">♻️ Review Duplicates</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchTool('organize')">📂 Organize Loose Files</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchTool('sweeper')">🧹 Clean Developer Bloat</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Tool-Specific Interface Container -->
+      <section class="section-card tool-results-section" id="tool-results-section">
+        
+        <!-- Search & Filter Bar (Used for Find & Peek) -->
+        <div class="search-filter-wrapper" id="search-filter-wrapper">
+          <div class="search-input-box">
+            <span class="search-icon">🔎</span>
+            <input type="text" id="main-search-input" placeholder="Search files by name, extension (.pdf, .docx, .py), or content..." value="">
+            <button class="search-clear-btn" id="btn-search-clear" style="display: none;">✕</button>
+          </div>
+
+          <!-- Filter Dropdown Button -->
+          <div class="filter-dropdown-wrap">
+            <button class="btn btn-secondary" id="btn-toggle-filters">
+              <span>⚙️ Filters</span>
+              <span id="filter-active-badge" class="filter-badge" style="display: none;">1</span>
+            </button>
+
+            <!-- Floating Filter Popover -->
+            <div class="filter-popover" id="filter-popover" style="display: none;">
+              <div class="filter-popover-title">Filter Options</div>
+              
+              <div class="filter-group">
+                <label class="filter-label">File Category</label>
+                <div class="filter-chips" id="filter-category-chips">
+                  <button class="filter-chip active" data-type="all">All Files</button>
+                  <button class="filter-chip" data-type="docs">Documents (.pdf, .docx, .txt)</button>
+                  <button class="filter-chip" data-type="code">Code (.py, .js, .json, .ipynb)</button>
+                  <button class="filter-chip" data-type="images">Images (.png, .jpg, .webp)</button>
+                  <button class="filter-chip" data-type="media">Audio & Video</button>
+                  <button class="filter-chip" data-type="archives">Archives (.zip, .tar)</button>
+                </div>
+              </div>
+
+              <div class="filter-group">
+                <label class="filter-toggle-label">
+                  <input type="checkbox" id="toggle-content-search-checkbox">
+                  <div>
+                    <div style="font-weight: 600; font-size: 13px;">Search Inside Document Content</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Searches full text in PDF, DOCX, Notebooks, and Code files</div>
+                  </div>
+                </label>
+              </div>
+
+              <div class="filter-popover-actions">
+                <button class="btn btn-ghost btn-sm" id="btn-reset-filters">Reset Filters</button>
+                <button class="btn btn-primary btn-sm" id="btn-apply-filters">Apply & Search</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool Context Header (For Organizer & Sweeper Controls) -->
+        <div id="tool-sub-header"></div>
+
+        <!-- Dynamic Results List -->
+        <div class="results-wrapper" id="results-wrapper">
+          <div class="empty-state">
+            <div class="empty-icon">📂</div>
+            <div class="empty-title">Nothing scanned yet</div>
+            <div class="empty-desc">Choose a folder above and start a scan to see your files here.</div>
+            <button class="btn btn-primary btn-sm" onclick="startScan()" style="margin-top: 10px;">
+              <span>▶ Start Scan</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Advanced Technical / Developer Details -->
+      <section class="section-card dev-section" id="dev-section" style="display: none;">
+        <div class="dev-header">
+          <div class="dev-title">
+            <span>🛠️</span>
+            <span>Developer View & Explicit DFS Stack (LIFO)</span>
+          </div>
+          <div class="dev-controls">
+            <div class="speed-selector">
+              <span class="speed-title">Speed:</span>
+              <button class="speed-pill" data-speed="slow">0.5x</button>
+              <button class="speed-pill active" data-speed="normal">1x</button>
+              <button class="speed-pill" data-speed="fast">5x</button>
+              <button class="speed-pill" data-speed="instant">Instant</button>
+            </div>
+            <button class="btn btn-outline btn-sm" id="btn-step-dfs" disabled title="Step to next DFS node">
+              <span>⏭ Step</span>
+            </button>
+            <button class="btn btn-outline btn-sm" id="btn-reset-dfs">
+              <span>↺ Reset</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- LIFO Stack Visualizer -->
+        <div class="stack-box">
+          <div class="stack-box-header">
+            <span>📚 EXPLICIT DFS STACK (LIFO)</span>
+            <span class="stack-depth" id="stack-depth-label">Depth: 0 nodes</span>
+          </div>
+          <div class="stack-chips-track" id="stack-chips-track">
+            <div class="stack-empty-msg">Stack is idle. Run scan to observe push and pop operations.</div>
+          </div>
+        </div>
+
+        <!-- Directory Tree & Telemetry Log -->
+        <div class="dev-grid">
+          <div class="tree-panel">
+            <div class="tree-panel-header">
+              <span>🌲 Hierarchy Tree</span>
+              <span id="tree-node-stat" style="font-size: 11px; color: var(--text-muted);">0 items</span>
+            </div>
+            <div class="tree-search-wrap">
+              <input type="text" id="dev-tree-filter" class="tree-filter-input" placeholder="Filter tree items...">
+            </div>
+            <div class="tree-body" id="tree-body"></div>
+          </div>
+
+          <div class="log-panel">
+            <div class="log-panel-header">
+              <span>📜 Real-Time Execution Log</span>
+              <button class="btn btn-ghost btn-sm" id="btn-clear-log" style="font-size: 11px; padding: 2px 6px;">Clear</button>
+            </div>
+            <div class="log-console" id="log-console">
+              <div class="log-entry log-sys"><span class="log-t">[00:00:00]</span> PathDiver initialized. Ready for operations.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Status Bar -->
+    <footer class="status-bar">
+      <div class="status-left">
+        <span class="status-brand">PathDiver</span>
+        <span class="status-sep">|</span>
+        <span id="status-activity-text">Ready</span>
+      </div>
+      <div class="status-right">
+        <span id="status-files-scanned">0 files scanned</span>
+        <span class="status-sep">|</span>
+        <span id="status-last-scan">Last scan: Never</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+/**
+ * PathDiver — Modern Application Logic
+ * Clean, Friendly User Experience with Progressive Technical Disclosure
+ */
+
+// Comprehensive Virtual Filesystem for Sandbox Simulation
+const VIRTUAL_FS = {
+  name: "demo-workspace",
+  path: "virtual://demo-workspace",
+  type: "directory",
+  children: [
+    {
+      name: "src",
+      path: "virtual://demo-workspace/src",
+      type: "directory",
+      children: [
+        {
+          name: "controllers",
+          path: "virtual://demo-workspace/src/controllers",
+          type: "directory",
+          children: [
+            { name: "authController.js", path: "virtual://demo-workspace/src/controllers/authController.js", type: "file", size: 14200, hash: "md5_auth_hash" },
+            { name: "authController_edited.js", path: "virtual://demo-workspace/src/controllers/authController_edited.js", type: "file", size: 14350, hash: "md5_auth_v2_hash" },
+            { name: "userController.js", path: "virtual://demo-workspace/src/controllers/userController.js", type: "file", size: 18500, hash: "md5_user_hash" }
+          ]
+        },
+        {
+          name: "models",
+          path: "virtual://demo-workspace/src/models",
+          type: "directory",
+          children: [
+            { name: "User.js", path: "virtual://demo-workspace/src/models/User.js", type: "file", size: 8400, hash: "md5_user_model" }
+          ]
+        },
+        { name: "index.js", path: "virtual://demo-workspace/src/index.js", type: "file", size: 3100, hash: "md5_index_hash" }
+      ]
+    },
+    {
+      name: "assets",
+      path: "virtual://demo-workspace/assets",
+      type: "directory",
+      children: [
+        {
+          name: "images",
+          path: "virtual://demo-workspace/assets/images",
+          type: "directory",
+          children: [
+            { name: "logo.png", path: "virtual://demo-workspace/assets/images/logo.png", size: 148500, hash: "img_logo_hash" },
+            { name: "banner_hero.jpg", path: "virtual://demo-workspace/assets/images/banner_hero.jpg", size: 524000, hash: "banner_hero_hash" },
+            { name: "logo_copy.png", path: "virtual://demo-workspace/assets/images/logo_copy.png", size: 148500, hash: "img_logo_hash" }
+          ]
+        },
+        {
+          name: "docs",
+          path: "virtual://demo-workspace/assets/docs",
+          type: "directory",
+          children: [
+            { name: "specs.pdf", path: "virtual://demo-workspace/assets/docs/specs.pdf", type: "file", size: 215000, hash: "pdf_specs_hash" },
+            { name: "notes.txt", path: "virtual://demo-workspace/assets/docs/notes.txt", type: "file", size: 1200, hash: "txt_notes_hash" },
+            { name: "notes_draft_v2.txt", path: "virtual://demo-workspace/assets/docs/notes_draft_v2.txt", type: "file", size: 1260, hash: "txt_notes_v2_hash" }
+          ]
+        }
+      ]
+    },
+    {
+      name: "node_modules",
+      path: "virtual://demo-workspace/node_modules",
+      type: "directory",
+      size: 340000000,
+      isCache: true,
+      description: "Node.js dependency packages"
+    },
+    {
+      name: ".venv",
+      path: "virtual://demo-workspace/.venv",
+      type: "directory",
+      size: 120000000,
+      isCache: true,
+      description: "Python virtual environment"
+    },
+    { name: "README.md", path: "virtual://demo-workspace/README.md", type: "file", size: 2400, hash: "readme_hash" },
+    { name: "package.json", path: "virtual://demo-workspace/package.json", type: "file", size: 1150, hash: "pkg_json_hash" }
+  ]
+};
+
+// Global App State
+const state = {
+  activeTool: "find",
+  theme: localStorage.getItem("pathdiver-theme") || "light",
+  devModeOpen: false,
+  welcomeDismissed: localStorage.getItem("pathdiver-welcome-dismissed") === "true",
+
+  targetPath: "Downloads",
+  resolvedPath: "",
+  activeTree: VIRTUAL_FS,
+  isBackendAvailable: false,
+  
+  availableDrives: ["C:\\"],
+  downloadsDir: "",
+  documentsDir: "",
+  desktopDir: "",
+  picturesDir: "",
+  scratchDir: "",
+
+  searchQuery: "",
+  filterCategory: "all",
+  searchInsideContent: false,
+
+  organizeData: null,
+  canUndoOrganize: false,
+  sweeperData: null,
+  sweeperSelectedPaths: new Set(),
+
+  isRunning: false,
+  isPaused: false,
+  speed: "normal",
+  stepCallback: null,
+  lastScanTime: null,
+  scannedFilesTotal: 0
+};
+
+const SPEED_MAP = {
+  slow: 500,
+  normal: 150,
+  fast: 30,
+  instant: 0
+};
+
+const CATEGORY_EXT_MAP = {
+  docs: ['.pdf', '.docx', '.doc', '.txt', '.xlsx', '.pptx', '.csv', '.rtf', '.odt'],
+  code: ['.py', '.js', '.ts', '.html', '.css', '.json', '.cpp', '.c', '.java', '.ipynb', '.sql', '.sh', '.bat'],
+  images: ['.png', '.jpg', '.jpeg', '.webp', '.svg', '.gif', '.bmp', '.tiff'],
+  media: ['.mp3', '.mp4', '.wav', '.mkv', '.avi', '.mov', '.flac'],
+  archives: ['.zip', '.rar', '.7z', '.tar', '.gz']
+};
+
+// DOM Elements
+const elements = {
+  themeBtnLight: document.getElementById("theme-btn-light"),
+  themeBtnDark: document.getElementById("theme-btn-dark"),
+  toggleDevModeBtn: document.getElementById("toggle-dev-mode"),
+  backendStatusPill: document.getElementById("backend-status-pill"),
+  backendStatusLabel: document.getElementById("backend-status-label"),
+
+  welcomeCard: document.getElementById("welcome-card"),
+  btnDismissWelcome: document.getElementById("btn-dismiss-welcome"),
+
+  scopePillsBar: document.getElementById("scope-pills-bar"),
+  btnToggleCustomPath: document.getElementById("btn-toggle-custom-path"),
+  customPathBar: document.getElementById("custom-path-bar"),
+  targetFolderInput: document.getElementById("target-folder-input"),
+  btnLoadCustomPath: document.getElementById("btn-load-custom-path"),
+
+  toolCards: document.querySelectorAll(".action-card"),
+
+  scanFolderDisplay: document.getElementById("scan-folder-display"),
+  scanStateLabel: document.getElementById("scan-state-label"),
+  scanStatusDot: document.getElementById("scan-status-dot"),
+  btnMainScan: document.getElementById("btn-main-scan"),
+  btnScanText: document.getElementById("btn-scan-text"),
+  btnMainPause: document.getElementById("btn-main-pause"),
+  btnMainStop: document.getElementById("btn-main-stop"),
+  scanProgressWrap: document.getElementById("scan-progress-wrap"),
+  scanLiveAction: document.getElementById("scan-live-action"),
+  scanLiveCount: document.getElementById("scan-live-count"),
+  scanProgressFill: document.getElementById("scan-progress-fill"),
+
+  dashboardCard: document.getElementById("dashboard-card"),
+  dashTimeElapsed: document.getElementById("dash-time-elapsed"),
+  statFiles: document.getElementById("stat-files"),
+  statFolders: document.getElementById("stat-folders"),
+  statDuplicates: document.getElementById("stat-duplicates"),
+  statSpace: document.getElementById("stat-space"),
+
+  searchFilterWrapper: document.getElementById("search-filter-wrapper"),
+  mainSearchInput: document.getElementById("main-search-input"),
+  btnSearchClear: document.getElementById("btn-search-clear"),
+  btnToggleFilters: document.getElementById("btn-toggle-filters"),
+  filterBadge: document.getElementById("filter-active-badge"),
+  filterPopover: document.getElementById("filter-popover"),
+  filterCategoryChips: document.getElementById("filter-category-chips"),
+  toggleContentCheckbox: document.getElementById("toggle-content-search-checkbox"),
+  btnResetFilters: document.getElementById("btn-reset-filters"),
+  btnApplyFilters: document.getElementById("btn-apply-filters"),
+
+  toolSubHeader: document.getElementById("tool-sub-header"),
+  resultsWrapper: document.getElementById("results-wrapper"),
+
+  devSection: document.getElementById("dev-section"),
+  speedPills: document.querySelectorAll(".speed-pill"),
+  btnStepDfs: document.getElementById("btn-step-dfs"),
+  btnResetDfs: document.getElementById("btn-reset-dfs"),
+  stackChipsTrack: document.getElementById("stack-chips-track"),
+  stackDepthLabel: document.getElementById("stack-depth-label"),
+  treeBody: document.getElementById("tree-body"),
+  treeNodeStat: document.getElementById("tree-node-stat"),
+  devTreeFilter: document.getElementById("dev-tree-filter"),
+  logConsole: document.getElementById("log-console"),
+  btnClearLog: document.getElementById("btn-clear-log"),
+
+  statusActivityText: document.getElementById("status-activity-text"),
+  statusFilesScanned: document.getElementById("status-files-scanned"),
+  statusLastScan: document.getElementById("status-last-scan")
+};
+
+function init() {
+  applyTheme(state.theme);
+  if (state.welcomeDismissed && elements.welcomeCard) {
+    elements.welcomeCard.style.display = "none";
+  }
+
+  setupEventListeners();
+  checkBackendConnection();
+  log("SYSTEM", "PathDiver initialized. Ready for operations.");
+}
+
+/* ==========================================================================
+   1. Theme & Navigation Controls
+   ========================================================================== */
+function applyTheme(theme) {
+  state.theme = theme;
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("pathdiver-theme", theme);
+
+  if (elements.themeBtnLight && elements.themeBtnDark) {
+    if (theme === "dark") {
+      elements.themeBtnDark.classList.add("active");
+      elements.themeBtnLight.classList.remove("active");
+    } else {
+      elements.themeBtnLight.classList.add("active");
+      elements.themeBtnDark.classList.remove("active");
+    }
+  }
+}
+
+function toggleDevMode(forceState) {
+  state.devModeOpen = typeof forceState === "boolean" ? forceState : !state.devModeOpen;
+  elements.devSection.style.display = state.devModeOpen ? "block" : "none";
+  elements.toggleDevModeBtn.classList.toggle("active", state.devModeOpen);
+  if (state.devModeOpen) {
+    renderTree(state.activeTree);
+    log("SYSTEM", "Technical / Developer view expanded.");
+  }
+}
+
+/* ==========================================================================
+   2. Backend Connection & Scope Setup
+   ========================================================================== */
+async function checkBackendConnection() {
+  try {
+    const res = await fetch("/api/drives", { signal: AbortSignal.timeout(2000) });
+    if (res.ok) {
+      const data = await res.json();
+      state.isBackendAvailable = true;
+      state.availableDrives = data.drives || ["C:\\"];
+      state.downloadsDir = data.downloads || "";
+      state.documentsDir = data.documents || "";
+      state.desktopDir = data.desktop || "";
+      state.picturesDir = data.pictures || "";
+      state.scratchDir = data.scratch_dir || "";
+
+      state.availableDrives.forEach(drive => {
+        if (drive.toUpperCase() !== "C:\\") {
+          const driveLetter = drive.replace(/[:\\\/]/g, "").toLowerCase();
+          const existing = document.querySelector(`[data-scope="drive-${driveLetter}"]`);
+          if (!existing) {
+            const btn = document.createElement("button");
+            btn.className = "scope-pill";
+            btn.setAttribute("data-scope", `drive-${driveLetter}`);
+            btn.setAttribute("data-path", drive);
+            btn.innerHTML = `<span class="pill-icon">💾</span> <span>${drive} Drive</span>`;
+            const allDisksBtn = document.querySelector('[data-scope="all-disks"]');
+            if (allDisksBtn) {
+              elements.scopePillsBar.insertBefore(btn, allDisksBtn);
+            }
+          }
+        }
+      });
+
+      elements.backendStatusLabel.textContent = "Connected";
+      elements.backendStatusPill.style.color = "var(--success)";
+      
+      const defaultPath = state.downloadsDir || "C:\\";
+      setScopePath(defaultPath, "Downloads");
+      loadRealTree(defaultPath);
+      log("SUCCESS", `Connected to Python backend. Target: ${defaultPath}`);
+    }
+  } catch (err) {
+    state.isBackendAvailable = false;
+    elements.backendStatusLabel.textContent = "Virtual Sandbox";
+    setScopePath("virtual://demo-workspace", "Virtual Workspace");
+    state.activeTree = VIRTUAL_FS;
+    log("SYSTEM", "Running in Virtual Sandbox demo mode.");
+  }
+}
+
+function setScopePath(path, displayName) {
+  state.resolvedPath = path;
+  state.targetPath = path;
+  elements.targetFolderInput.value = path;
+  elements.scanFolderDisplay.textContent = displayName || path.split(/[\\/]/).filter(Boolean).pop() || path;
+  elements.scanStateLabel.textContent = `Ready to scan · ${path}`;
+}
+
+async function loadRealTree(path) {
+  try {
+    const res = await fetch(`/api/tree?path=${encodeURIComponent(path)}&depth=2`);
+    const data = await res.json();
+    if (data.success && data.tree) {
+      state.activeTree = data.tree;
+      if (state.devModeOpen) renderTree(state.activeTree);
+    }
+  } catch (err) {
+    console.error("Failed to load hierarchy:", err);
+  }
+}
+
+/* ==========================================================================
+   3. Tool Selection ("What would you like to do?")
+   ========================================================================== */
+function switchTool(toolId) {
+  state.activeTool = toolId;
+  elements.toolCards.forEach(card => {
+    card.classList.toggle("active", card.getAttribute("data-tool") === toolId);
+  });
+
+  const toolLabels = {
+    find: "Start Search Scan",
+    duplicates: "Start Duplicate Scan",
+    organize: "Analyze Loose Files",
+    sweeper: "Scan Developer Caches"
+  };
+  elements.btnScanText.textContent = toolLabels[toolId] || "Start Scan";
+
+  elements.searchFilterWrapper.style.display = (toolId === "find") ? "flex" : "none";
+  renderToolSubHeader();
+
+  if (toolId === "organize" && state.organizeData) {
+    renderOrganizeResults(state.organizeData);
+  } else if (toolId === "sweeper" && state.sweeperData) {
+    renderSweeperResults(state.sweeperData);
+  } else {
+    renderInitialEmptyState();
+  }
+
+  log("SYSTEM", `Active superpower switched to: ${toolId.toUpperCase()}`);
+}
+
+function renderToolSubHeader() {
+  if (state.activeTool === "organize") {
+    const hasLoose = state.organizeData && state.organizeData.total_loose_files > 0;
+    elements.toolSubHeader.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: var(--surface-inset); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border); flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="font-weight: 700; font-size: 13.5px; color: var(--success);">🧹 1-Click Loose File Organizer</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Sort unorganized files into Documents, Images, Code, etc. without touching subfolders.</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-primary btn-sm" id="btn-apply-organize" style="background: var(--success); border-color: var(--success);" ${hasLoose ? '' : 'disabled'}>
+            ✨ Organize Now ${hasLoose ? `(${state.organizeData.total_loose_files} files)` : ''}
+          </button>
+          <button class="btn btn-outline btn-sm" id="btn-undo-organize" ${state.canUndoOrganize ? '' : 'disabled'}>
+            ↺ 1-Click Undo
+          </button>
+        </div>
+      </div>
+    `;
+    const btnApply = document.getElementById("btn-apply-organize");
+    if (btnApply) btnApply.addEventListener("click", applyFolderOrganize);
+    const btnUndo = document.getElementById("btn-undo-organize");
+    if (btnUndo) btnUndo.addEventListener("click", undoFolderOrganize);
+  } else if (state.activeTool === "sweeper") {
+    const selCount = state.sweeperSelectedPaths ? state.sweeperSelectedPaths.size : 0;
+    elements.toolSubHeader.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: var(--surface-inset); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border); flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="font-weight: 700; font-size: 13.5px; color: var(--warning);">🧼 Developer & Cache Junk Sweeper</div>
+          <div style="font-size: 12px; color: var(--text-muted);">Prunes node_modules, .venv, and build caches in &lt;2s. Reclaims space directly to OS Recycle Bin.</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-danger btn-sm" id="btn-clean-sweeper" ${selCount > 0 ? '' : 'disabled'}>
+            🗑️ Reclaim Space (${selCount} selected)
+          </button>
+        </div>
+      </div>
+    `;
+    const btnClean = document.getElementById("btn-clean-sweeper");
+    if (btnClean) btnClean.addEventListener("click", cleanSelectedCaches);
+  } else {
+    elements.toolSubHeader.innerHTML = "";
+  }
+}
+
+function renderInitialEmptyState() {
+  elements.resultsWrapper.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">📂</div>
+      <div class="empty-title">Nothing scanned yet</div>
+      <div class="empty-desc">Choose a folder above and start a scan to see your files here.</div>
+      <button class="btn btn-primary btn-sm" onclick="startScan()" style="margin-top: 10px;">
+        <span>▶ Start Scan</span>
+      </button>
+    </div>
+  `;
+}
+
+/* ==========================================================================
+   4. Scan Execution Engine
+   ========================================================================== */
+async function startScan() {
+  if (state.isRunning) return;
+
+  state.isRunning = true;
+  state.isPaused = false;
+  elements.btnMainScan.disabled = true;
+  elements.btnMainPause.style.display = "inline-flex";
+  elements.btnMainStop.style.display = "inline-flex";
+  elements.scanProgressWrap.style.display = "block";
+  elements.scanStatusDot.className = "scan-status-dot scanning";
+  elements.scanStateLabel.textContent = `Scanning ${elements.scanFolderDisplay.textContent}...`;
+  elements.statusActivityText.textContent = `Scanning ${state.targetPath}...`;
+
+  const isReal = state.isBackendAvailable && !state.targetPath.startsWith("virtual://");
+
+  if (state.activeTool === "find") {
+    if (isReal) await runRealFindScan(); else await runVirtualFindScan();
+  } else if (state.activeTool === "duplicates") {
+    if (isReal) await runRealDuplicateScan(); else await runVirtualDuplicateScan();
+  } else if (state.activeTool === "organize") {
+    if (isReal) await analyzeFolderToOrganize(); else await runVirtualOrganize();
+  } else if (state.activeTool === "sweeper") {
+    if (isReal) await scanDevCaches(); else await runVirtualSweeper();
+  }
+
+  if (isReal) fetchDashboardOverview();
+
+  finishScan();
+}
+
+function finishScan() {
+  state.isRunning = false;
+  state.isPaused = false;
+  elements.btnMainScan.disabled = false;
+  elements.btnMainPause.style.display = "none";
+  elements.btnMainStop.style.display = "none";
+  elements.scanProgressWrap.style.display = "none";
+  elements.scanStatusDot.className = "scan-status-dot";
+  elements.scanStateLabel.textContent = `Scan complete · ${state.targetPath}`;
+  elements.statusActivityText.textContent = "Ready";
+  state.lastScanTime = new Date().toLocaleTimeString();
+  elements.statusLastScan.textContent = `Last scan: ${state.lastScanTime}`;
+  updateStackUI([]);
+}
+
+async function fetchDashboardOverview() {
+  try {
+    const res = await fetch(`/api/dashboard?path=${encodeURIComponent(state.targetPath)}`);
+    const result = await res.json();
+    if (result.success && result.data) {
+      const d = result.data;
+      elements.statFiles.textContent = (d.files_count || 0).toLocaleString();
+      elements.statFolders.textContent = (d.dirs_count || 0).toLocaleString();
+      elements.statDuplicates.textContent = (d.potential_duplicates_estimate || 0).toLocaleString();
+      elements.statSpace.textContent = formatBytes(d.total_size || 0);
+      elements.dashTimeElapsed.textContent = `${d.time_elapsed}s`;
+      elements.dashboardCard.style.display = "block";
+      elements.statusFilesScanned.textContent = `${d.files_count} files scanned`;
+    }
+  } catch (err) {
+    console.error("Dashboard overview error:", err);
+  }
+}
+
+/* Real OS Scans */
+async function runRealFindScan() {
+  const contentFlag = state.searchInsideContent ? '&content=1' : '';
+  const exts = state.filterCategory !== 'all' ? `&exts=${(CATEGORY_EXT_MAP[state.filterCategory] || []).join(',')}` : '';
+  const endpoint = `/api/find?path=${encodeURIComponent(state.targetPath)}&q=${encodeURIComponent(state.searchQuery)}&limit=1000&timeout=25${contentFlag}${exts}`;
+
+  log("SYSTEM", `Running Find scan on ${state.targetPath} (query: "${state.searchQuery}")...`);
+
+  try {
+    const res = await fetch(endpoint);
+    const result = await res.json();
+    if (result.success) {
+      const d = result.data;
+      animateStackTrace(d.stack_trace_samples || []);
+      renderFindResults(d.matches || []);
+      log("SUCCESS", `Found ${d.matches_count} item(s) across ${d.scanned_directories} dirs in ${d.time_elapsed}s.`);
+    } else {
+      elements.resultsWrapper.innerHTML = `<div style="color: var(--danger); padding: 20px;">Scan Error: ${escapeHtml(result.error)}</div>`;
+    }
+  } catch (err) {
+    log("ERROR", `Find scan failed: ${err.message}`);
+  }
+}
+
+async function runRealDuplicateScan() {
+  log("SYSTEM", `Running Heuristic Duplicate Detection on ${state.targetPath}...`);
+  try {
+    const res = await fetch(`/api/duplicates?path=${encodeURIComponent(state.targetPath)}`);
+    const result = await res.json();
+    if (result.success) {
+      const d = result.data;
+      renderDuplicateResults(d.duplicate_groups || [], d.reclaimable_bytes || 0);
+      log("SUCCESS", `Detected ${d.duplicate_groups_count} duplicate clusters with ${formatBytes(d.reclaimable_bytes)} reclaimable space.`);
+    } else {
+      elements.resultsWrapper.innerHTML = `<div style="color: var(--danger); padding: 20px;">Duplicate Scan Error: ${escapeHtml(result.error)}</div>`;
+    }
+  } catch (err) {
+    log("ERROR", `Duplicate request failed: ${err.message}`);
+  }
+}
+
+/* Virtual Sandbox Scans */
+async function runVirtualFindScan() {
+  log("SYSTEM", `Running simulated search on virtual demo workspace...`);
+  const matches = [];
+  const q = state.searchQuery.toLowerCase();
+
+  function traverse(node) {
+    if (node.type === "file") {
+      if (!q || node.name.toLowerCase().includes(q)) {
+        matches.push(node);
+      }
+    }
+    if (node.children) {
+      node.children.forEach(traverse);
+    }
+  }
+  traverse(VIRTUAL_FS);
+  await sleep(250);
+  renderFindResults(matches);
+  elements.dashboardCard.style.display = "block";
+  elements.statFiles.textContent = matches.length;
+  elements.statFolders.textContent = "6";
+  elements.statDuplicates.textContent = "2";
+  elements.statSpace.textContent = "462.4 MB";
+}
+
+async function runVirtualDuplicateScan() {
+  log("SYSTEM", `Running simulated duplicate detection...`);
+  await sleep(300);
+  const dupGroups = [
+    {
+      title: "logo.png (2 identical copies)",
+      hash: "img_logo_hash",
+      wasted_bytes: 148500,
+      has_edited: false,
+      files: [
+        { name: "logo.png", path: "virtual://demo-workspace/assets/images/logo.png", size: 148500, role: "original", badge: "ORIGINAL", details: "Baseline original brand logo" },
+        { name: "logo_copy.png", path: "virtual://demo-workspace/assets/images/logo_copy.png", size: 148500, role: "exact_duplicate", badge: "EXACT DITTO", details: "100% byte-for-byte identical copy" }
+      ]
+    },
+    {
+      title: "authController.js (Original + 1 Edited Version)",
+      hash: "md5_auth_hash",
+      wasted_bytes: 0,
+      has_edited: true,
+      files: [
+        { name: "authController.js", path: "virtual://demo-workspace/src/controllers/authController.js", size: 14200, role: "original", badge: "ORIGINAL", details: "Baseline authentication controller" },
+        { name: "authController_edited.js", path: "virtual://demo-workspace/src/controllers/authController_edited.js", size: 14350, role: "edited", badge: "EDITED VERSION", details: "1 line modified (98.2% similarity)" }
+      ]
+    }
+  ];
+  renderDuplicateResults(dupGroups, 148500);
+}
+
+/* ==========================================================================
+   5. Results Rendering: Find & Peek
+   ========================================================================== */
+function renderFindResults(matches) {
+  if (!matches || matches.length === 0) {
+    elements.resultsWrapper.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">❌</div>
+        <div class="empty-title">No matching files found</div>
+        <div class="empty-desc">Try modifying your query or selecting another directory scope.</div>
+      </div>
+    `;
+    return;
+  }
+
+  elements.resultsWrapper.innerHTML = `
+    <div style="font-weight: 700; font-size: 13.5px; color: var(--primary); margin-bottom: 8px;">
+      ✅ Found ${matches.length} matching item${matches.length === 1 ? '' : 's'}:
+    </div>
+    ${matches.map((m, idx) => {
+      const isDir = m.type === "directory";
+      const icon = isDir ? "📁" : "📄";
+      const drawerId = `peek-drawer-${idx}`;
+      return `
+      <div class="result-card" data-name="${escapeHtml(m.name)}" data-path="${escapeHtml(m.path)}">
+        <div class="result-main-row">
+          <div class="result-info">
+            <div class="result-title-line">
+              <span style="font-size: 16px;">${icon}</span>
+              <span class="result-filename" title="${escapeHtml(m.path)}">${escapeHtml(m.name)}</span>
+              <span class="result-size">${formatBytes(m.size)}</span>
+            </div>
+            ${m.snippet ? `<div class="result-snippet">💬 Match: ${escapeHtml(m.snippet)}</div>` : ''}
+          </div>
+          <div class="result-actions">
+            ${!isDir ? `<button class="btn btn-outline btn-sm" onclick="togglePeek('${escapeJs(m.path)}', '${drawerId}', this)">👁️ Peek</button>` : ''}
+            <button class="btn btn-primary btn-sm" onclick="openFile('${escapeJs(m.path)}')">${isDir ? '📂 Open Folder' : '📄 Open'}</button>
+            <button class="btn btn-danger btn-outline btn-sm" onclick="deleteFile('${escapeJs(m.path)}', this)">🗑️ Delete</button>
+          </div>
+        </div>
+        <div class="peek-drawer" id="${drawerId}" style="display: none;"></div>
+      </div>
+      `;
+    }).join('')}
+  `;
+}
+
+async function togglePeek(path, drawerId, btnEl) {
+  const drawer = document.getElementById(drawerId);
+  if (!drawer) return;
+
+  if (drawer.style.display !== "none") {
+    drawer.style.display = "none";
+    btnEl.innerHTML = "👁️ Peek";
+    btnEl.classList.remove("btn-primary");
+    btnEl.classList.add("btn-outline");
+    return;
+  }
+
+  drawer.style.display = "block";
+  drawer.innerHTML = `<div style="font-size: 12px; color: var(--text-muted);">⏳ Generating smart 2-line peek...</div>`;
+  btnEl.innerHTML = "✕ Close";
+  btnEl.classList.remove("btn-outline");
+  btnEl.classList.add("btn-primary");
+
+  if (path.startsWith("virtual://")) {
+    const filename = path.split('/').pop();
+    setTimeout(() => {
+      drawer.innerHTML = `
+        <div class="peek-drawer-header">
+          <span>📄 Virtual Demo Item</span>
+          <span>${formatBytes(12500)}</span>
+        </div>
+        <div class="peek-drawer-summary">💡 Simulation File: In-memory representation for testing and walkthroughs.</div>
+        <div class="peek-drawer-snippet">// Preview contents of ${escapeHtml(filename)}\nfunction demoPeek() {\n  return true;\n}</div>
+      `;
+    }, 100);
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/peek?path=${encodeURIComponent(path)}`);
+    const result = await res.json();
+    if (result.success && result.data) {
+      const d = result.data;
+      drawer.innerHTML = `
+        <div class="peek-drawer-header">
+          <span>${escapeHtml(d.type || 'File')}</span>
+          <span>${d.pages ? d.pages + ' pages' : ''}</span>
+        </div>
+        <div class="peek-drawer-summary">${escapeHtml(d.summary || 'Summary unavailable.')}</div>
+        ${d.snippet ? `<div class="peek-drawer-snippet">${escapeHtml(d.snippet)}</div>` : ''}
+      `;
+    } else {
+      drawer.innerHTML = `<div style="color: var(--danger); font-size: 12px;">Peek error: ${escapeHtml(result.error || 'Failed to extract summary')}</div>`;
+    }
+  } catch (err) {
+    drawer.innerHTML = `<div style="color: var(--danger); font-size: 12px;">Peek error: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+/* ==========================================================================
+   6. Results Rendering: Duplicate & Edited Files
+   ========================================================================== */
+function renderDuplicateResults(dupGroups, reclaimableBytes) {
+  if (!dupGroups || dupGroups.length === 0) {
+    elements.resultsWrapper.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✅</div>
+        <div class="empty-title">No duplicate files detected</div>
+        <div class="empty-desc">All files across this directory scope have completely unique contents.</div>
+      </div>
+    `;
+    return;
+  }
+
+  const exactClusters = dupGroups.filter(g => !g.has_edited);
+  const editedClusters = dupGroups.filter(g => g.has_edited);
+
+  elements.resultsWrapper.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+      <div>
+        <div style="font-weight: 700; font-size: 14px; color: var(--warning);">
+          ⚠️ Detected ${dupGroups.length} File Cluster${dupGroups.length === 1 ? '' : 's'}:
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted);">
+          (${exactClusters.length} exact ditto duplicate group${exactClusters.length === 1 ? '' : 's'}, ${editedClusters.length} edited version group${editedClusters.length === 1 ? '' : 's'})
+        </div>
+      </div>
+      <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 800; color: var(--primary);">
+        Reclaimable Space: ${formatBytes(reclaimableBytes)}
+      </div>
+    </div>
+
+    ${dupGroups.map(g => {
+      const isEdited = g.has_edited;
+      const badgeClass = isEdited ? 'dup-badge-edited' : 'dup-badge-exact';
+      const badgeLabel = isEdited ? '✏️ EDITED VERSION GROUP' : '👯 EXACT DITTO GROUP';
+
+      return `
+      <div class="dup-cluster-card">
+        <div class="dup-cluster-header">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span class="dup-badge ${badgeClass}">${badgeLabel}</span>
+            <span style="font-weight: 700; font-size: 13px;">${escapeHtml(g.title)}</span>
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--primary); font-family: var(--font-mono);">
+            ${g.wasted_bytes > 0 ? 'Wasting ' + formatBytes(g.wasted_bytes) : 'Inspect Edits'}
+          </div>
+        </div>
+
+        <div class="dup-files-body">
+          ${g.files.map(f => {
+            const role = f.role;
+            let roleBadge = 'dup-badge-exact';
+            let roleText = '👯 EXACT DITTO';
+            let deleteLabel = '🗑️ Delete Duplicate';
+
+            if (role === 'original') {
+              roleBadge = 'dup-badge-original';
+              roleText = '🌟 ORIGINAL';
+              deleteLabel = '🗑️ Delete (Original)';
+            } else if (role === 'edited') {
+              roleBadge = 'dup-badge-edited';
+              roleText = '✏️ EDITED VERSION';
+              deleteLabel = '🗑️ Delete (Edited)';
+            }
+
+            return `
+            <div class="dup-file-row role-${role}">
+              <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                <span style="font-size: 15px;">${role === 'edited' ? '📝' : (role === 'original' ? '📁' : '📄')}</span>
+                <span style="font-weight: 600; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(f.path)}">
+                  ${escapeHtml(f.name)}
+                </span>
+                <span class="dup-badge ${roleBadge}">${roleText}</span>
+                <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-dim);">(${formatBytes(f.size)})</span>
+              </div>
+              <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                <button class="btn btn-secondary btn-sm" onclick="openFile('${escapeJs(f.path)}')">Open</button>
+                <button class="btn btn-danger btn-outline btn-sm" onclick="deleteDuplicateFile('${escapeJs(f.path)}', '${role}', '${escapeJs(f.name)}', this)">
+                  ${deleteLabel}
+                </button>
+              </div>
+            </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+      `;
+    }).join('')}
+  `;
+}
+
+/* ==========================================================================
+   7. Organizer Engine & Reversible Undo
+   ========================================================================== */
+async function analyzeFolderToOrganize() {
+  elements.resultsWrapper.innerHTML = `<div style="text-align: center; padding: 32px; color: var(--text-muted);">⏳ Analyzing loose files in <strong>${escapeHtml(state.targetPath)}</strong>...</div>`;
+  log("SYSTEM", `Analyzing folder for loose files: ${state.targetPath}...`);
+
+  try {
+    const res = await fetch(`/api/organize/preview?path=${encodeURIComponent(state.targetPath)}`);
+    const result = await res.json();
+    if (result.success && result.data) {
+      state.organizeData = result.data;
+      state.canUndoOrganize = result.data.can_undo;
+      renderOrganizeResults(result.data);
+      renderToolSubHeader();
+      log("SUCCESS", `Found ${result.data.total_loose_files} loose files ready to organize.`);
+    }
+  } catch (err) {
+    log("ERROR", `Organizer analysis failed: ${err.message}`);
+  }
+}
+
+async function runVirtualOrganize() {
+  const dummy = {
+    folder: state.targetPath,
+    total_loose_files: 5,
+    total_loose_bytes: 845000,
+    can_undo: state.canUndoOrganize,
+    categories: {
+      "Documents": [{ name: "specs.pdf", size: 215000 }, { name: "notes.txt", size: 1200 }],
+      "Images": [{ name: "logo.png", size: 148500 }, { name: "banner_hero.jpg", size: 524000 }],
+      "Code": [{ name: "index.js", size: 3100 }]
+    }
+  };
+  state.organizeData = dummy;
+  renderOrganizeResults(dummy);
+  renderToolSubHeader();
+}
+
+function renderOrganizeResults(data) {
+  if (!data || data.total_loose_files === 0) {
+    elements.resultsWrapper.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✨</div>
+        <div class="empty-title" style="color: var(--success);">Folder is 100% Clean!</div>
+        <div class="empty-desc">No loose files found directly in this directory. Everything is already organized into subfolders.</div>
+      </div>
+    `;
+    return;
+  }
+
+  const cats = Object.entries(data.categories || {}).filter(([_, list]) => list.length > 0);
+
+  elements.resultsWrapper.innerHTML = `
+    <div style="margin-bottom: 12px; font-weight: 700; font-size: 13.5px; color: var(--success);">
+      🧹 Found ${data.total_loose_files} loose file${data.total_loose_files === 1 ? '' : 's'} (${formatBytes(data.total_loose_bytes)}) across ${cats.length} target categories:
+    </div>
+    <div class="organize-grid">
+      ${cats.map(([catName, files]) => {
+        const catBytes = files.reduce((acc, f) => acc + (f.size || 0), 0);
+        return `
+        <div class="organize-cat-card">
+          <div class="organize-cat-header">
+            <span>📁 ${catName}/</span>
+            <span style="font-size: 11px; font-weight: 700; color: var(--primary);">${files.length} file${files.length === 1 ? '' : 's'}</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 6px;">Total: ${formatBytes(catBytes)}</div>
+          <div class="organize-file-list">
+            ${files.slice(0, 4).map(f => `<div>• ${escapeHtml(f.name)} <span style="color: var(--text-dim);">(${formatBytes(f.size)})</span></div>`).join('')}
+            ${files.length > 4 ? `<div style="font-style: italic; color: var(--text-dim);">+ ${files.length - 4} more files...</div>` : ''}
+          </div>
+        </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+async function applyFolderOrganize() {
+  if (!state.organizeData || state.organizeData.total_loose_files === 0) return;
+  const count = state.organizeData.total_loose_files;
+  if (!confirm(`Organize ${count} loose files in "${state.targetPath}" into neat category subfolders (Documents, Images, Code, etc.)?\n\n(1-Click Undo is available to restore them anytime).`)) {
+    return;
+  }
+
+  if (state.targetPath.startsWith("virtual://")) {
+    state.canUndoOrganize = true;
+    alert(`Successfully organized ${count} files!\n\n1-Click Undo is active.`);
+    state.organizeData = null;
+    renderToolSubHeader();
+    renderOrganizeResults({ total_loose_files: 0 });
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/organize/apply`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: state.targetPath })
+    });
+    const result = await res.json();
+    if (result.success) {
+      state.canUndoOrganize = true;
+      log("SUCCESS", `Organized ${result.moved_count} file(s) into category subfolders.`);
+      await analyzeFolderToOrganize();
+      alert(`✨ Successfully organized ${result.moved_count} files!\n\n1-Click Undo is available.`);
+    }
+  } catch (err) {
+    alert(`Organization error: ${err.message}`);
+  }
+}
+
+async function undoFolderOrganize() {
+  if (!confirm(`Undo last organization?\n\nAll files will be moved back to their exact original locations, and empty generated category folders will be removed.`)) {
+    return;
+  }
+
+  if (state.targetPath.startsWith("virtual://")) {
+    state.canUndoOrganize = false;
+    alert(`Undone! Restored all files to original location.`);
+    runVirtualOrganize();
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/organize/undo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+    const result = await res.json();
+    if (result.success) {
+      state.canUndoOrganize = result.remaining_undo_count > 0;
+      log("SUCCESS", `Restored ${result.restored_count} files to original positions.`);
+      await analyzeFolderToOrganize();
+      alert(`↺ Undone successfully!\n\nRestored ${result.restored_count} files.`);
+    }
+  } catch (err) {
+    alert(`Undo failed: ${err.message}`);
+  }
+}
+
+/* ==========================================================================
+   8. Developer & Cache Junk Sweeper
+   ========================================================================== */
+async function scanDevCaches() {
+  elements.resultsWrapper.innerHTML = `<div style="text-align: center; padding: 32px; color: var(--text-muted);">⏳ Pruning directory tree for developer caches in <strong>${escapeHtml(state.targetPath)}</strong>...</div>`;
+  log("SYSTEM", `Scanning developer caches in ${state.targetPath}...`);
+
+  try {
+    const res = await fetch(`/api/sweeper/scan?path=${encodeURIComponent(state.targetPath)}`);
+    const result = await res.json();
+    if (result.success && result.data) {
+      state.sweeperData = result.data;
+      state.sweeperSelectedPaths = new Set(result.data.caches.map(c => c.path));
+      renderSweeperResults(result.data);
+      renderToolSubHeader();
+      log("SUCCESS", `Found ${result.data.total_caches_found} cache directories with ${formatBytes(result.data.total_reclaimable_bytes)}.`);
+    }
+  } catch (err) {
+    log("ERROR", `Sweeper scan failed: ${err.message}`);
+  }
+}
+
+async function runVirtualSweeper() {
+  const dummy = {
+    root: state.targetPath,
+    total_caches_found: 2,
+    total_reclaimable_bytes: 460000000,
+    time_elapsed: 0.04,
+    caches: [
+      { name: "node_modules", path: "virtual://demo-workspace/node_modules", size: 340000000, description: "Node.js dependency packages", files_count: 1420 },
+      { name: ".venv", path: "virtual://demo-workspace/.venv", size: 120000000, description: "Python virtual environment", files_count: 850 }
+    ]
+  };
+  state.sweeperData = dummy;
+  state.sweeperSelectedPaths = new Set(dummy.caches.map(c => c.path));
+  renderSweeperResults(dummy);
+  renderToolSubHeader();
+}
+
+function renderSweeperResults(data) {
+  if (!data || data.caches.length === 0) {
+    elements.resultsWrapper.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✨</div>
+        <div class="empty-title" style="color: var(--primary);">Workspace is Sparkling Clean!</div>
+        <div class="empty-desc">No developer bloat, node_modules, or cache junk found in this directory scope.</div>
+      </div>
+    `;
+    return;
+  }
+
+  elements.resultsWrapper.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: gap; gap: 8px;">
+      <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 700; font-size: 13px;">
+        <input type="checkbox" id="sweeper-select-all" checked onchange="toggleSelectAllCaches(this)">
+        <span>Select All (${data.caches.length} item${data.caches.length === 1 ? '' : 's'})</span>
+      </label>
+      <div style="font-family: var(--font-mono); font-weight: 800; font-size: 13px; color: var(--danger);">
+        Reclaimable Space: ${formatBytes(data.total_reclaimable_bytes)}
+      </div>
+    </div>
+
+    ${data.caches.map((c, idx) => {
+      const isChecked = state.sweeperSelectedPaths.has(c.path) ? 'checked' : '';
+      return `
+      <div class="sweeper-row" id="sweeper-row-${idx}">
+        <div class="sweeper-row-left">
+          <input type="checkbox" class="sweeper-checkbox" data-path="${escapeHtml(c.path)}" ${isChecked} onchange="toggleCacheCheckbox('${escapeJs(c.path)}', this)">
+          <span style="font-size: 18px;">📁</span>
+          <div>
+            <div class="sweeper-name">${escapeHtml(c.name)} <span style="font-size: 11px; font-weight: normal; color: var(--text-dim);">(${c.files_count || 0} files)</span></div>
+            <div class="sweeper-desc">${escapeHtml(c.description || '')}</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--text-main);">${formatBytes(c.size)}</div>
+          <button class="btn btn-secondary btn-sm" onclick="openFile('${escapeJs(c.path)}')">Open</button>
+        </div>
+      </div>
+      `;
+    }).join('')}
+  `;
+}
+
+function toggleSelectAllCaches(masterCheckbox) {
+  const isChecked = masterCheckbox.checked;
+  document.querySelectorAll(".sweeper-checkbox").forEach(cb => {
+    cb.checked = isChecked;
+    const p = cb.getAttribute("data-path");
+    if (isChecked) state.sweeperSelectedPaths.add(p); else state.sweeperSelectedPaths.delete(p);
+  });
+  renderToolSubHeader();
+}
+
+function toggleCacheCheckbox(path, cb) {
+  if (cb.checked) state.sweeperSelectedPaths.add(path); else state.sweeperSelectedPaths.delete(path);
+  const master = document.getElementById("sweeper-select-all");
+  if (master) master.checked = false;
+  renderToolSubHeader();
+}
+
+async function cleanSelectedCaches() {
+  const selectedPaths = Array.from(state.sweeperSelectedPaths);
+  if (selectedPaths.length === 0) return;
+
+  let totalBytes = 0;
+  if (state.sweeperData && state.sweeperData.caches) {
+    totalBytes = state.sweeperData.caches.filter(c => state.sweeperSelectedPaths.has(c.path)).reduce((a, b) => a + b.size, 0);
+  }
+
+  if (!confirm(`Move ${selectedPaths.length} selected cache folder(s) (${formatBytes(totalBytes)}) to the OS Recycle Bin?\n\n(You can safely restore them from the Recycle Bin if needed).`)) {
+    return;
+  }
+
+  if (state.targetPath.startsWith("virtual://")) {
+    alert(`Reclaimed ${formatBytes(totalBytes)} of storage!`);
+    state.sweeperSelectedPaths.clear();
+    runVirtualSweeper();
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/sweeper/clean`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paths: selectedPaths })
+    });
+    const result = await res.json();
+    if (result.success) {
+      log("SUCCESS", `Moved ${result.cleaned_count} cache folder(s) to Recycle Bin. Reclaimed ${formatBytes(result.reclaimed_bytes)}!`);
+      state.sweeperSelectedPaths.clear();
+      await scanDevCaches();
+      alert(`✨ Cleaned ${result.cleaned_count} cache folders! Reclaimed ${formatBytes(result.reclaimed_bytes)}.`);
+    }
+  } catch (err) {
+    alert(`Clean error: ${err.message}`);
+  }
+}
+
+/* ==========================================================================
+   9. File Actions & Safe Deletions
+   ========================================================================== */
+function openFile(path) {
+  if (path.startsWith("virtual://")) {
+    alert(`Virtual Sandbox Item:\n${path}\n\nTo open real files on your computer, choose one of the quick folders above (Downloads, Documents, Desktop, etc.).`);
+    return;
+  }
+  fetch(`/api/open?path=${encodeURIComponent(path)}&reveal=0`).then(r => r.json()).then(data => {
+    if (data.success) log("SUCCESS", `Opened: ${path}`);
+    else log("ERROR", `Failed to open: ${data.error}`);
+  }).catch(err => log("ERROR", `Open error: ${err.message}`));
+}
+
+function deleteFile(path, btnEl) {
+  const fileName = path.split(/[\\/]/).pop() || path;
+  if (!confirm(`Move this file to the OS Recycle Bin?\n\nFile: ${fileName}\nPath: ${path}`)) {
+    return;
+  }
+  executeRecycleBinDelete(path, btnEl, 'file', fileName);
+}
+
+function deleteDuplicateFile(path, role, fileName, btnEl) {
+  const isOriginal = role === 'original';
+  const isEdited = role === 'edited';
+
+  if (!isOriginal && !isEdited) {
+    log("SYSTEM", `Moving EXACT DITTO duplicate to Recycle Bin: ${fileName}`);
+    executeRecycleBinDelete(path, btnEl, 'exact_duplicate', fileName);
+    return;
+  }
+
+  const label = isOriginal ? "ORIGINAL FILE" : "EDITED VERSION";
+  if (!confirm(`Move ${label} to the OS Recycle Bin?\n\nFile: ${fileName}\nPath: ${path}`)) {
+    return;
+  }
+  executeRecycleBinDelete(path, btnEl, role, fileName);
+}
+
+function executeRecycleBinDelete(path, btnEl, role, fileName) {
+  if (path.startsWith("virtual://")) {
+    log("SUCCESS", `(Virtual) Moved ${role} to Recycle Bin: ${fileName}`);
+    removeResultCard(btnEl);
+    return;
+  }
+
+  fetch(`/api/delete?path=${encodeURIComponent(path)}`).then(r => r.json()).then(data => {
+    if (data.success) {
+      log("SUCCESS", `Moved to OS Recycle Bin: ${fileName} (${role})`);
+      removeResultCard(btnEl);
+    } else {
+      alert(`Deletion error: ${data.error}`);
+    }
+  }).catch(err => alert(`Delete error: ${err.message}`));
+}
+
+function removeResultCard(btnEl) {
+  if (!btnEl) return;
+  const card = btnEl.closest(".result-card") || btnEl.closest(".dup-file-row");
+  if (card) {
+    card.style.transition = "all 0.25s ease";
+    card.style.opacity = "0";
+    card.style.transform = "translateX(20px)";
+    setTimeout(() => card.remove(), 250);
+  }
+}
+
+/* ==========================================================================
+   10. Technical / Developer View: DFS Stack & Hierarchy Tree
+   ========================================================================== */
+function updateStackUI(stack) {
+  if (!elements.stackDepthLabel || !elements.stackChipsTrack) return;
+  elements.stackDepthLabel.textContent = `Depth: ${stack.length} nodes`;
+
+  if (stack.length === 0) {
+    elements.stackChipsTrack.innerHTML = `<div class="stack-empty-msg">Stack is idle. Run scan to observe push and pop operations.</div>`;
+    return;
+  }
+
+  const visible = stack.slice(-12);
+  elements.stackChipsTrack.innerHTML = visible.map(item => {
+    const displayName = typeof item === 'string' ? item.split(/[\\/]/).filter(Boolean).pop() || item : item.name || 'node';
+    return `<div class="stack-chip"><span>📁</span> <span>${escapeHtml(displayName)}</span></div>`;
+  }).join('');
+}
+
+function renderTree(rootNode) {
+  if (!elements.treeBody) return;
+  elements.treeBody.innerHTML = "";
+  let totalFiles = 0;
+  let totalDirs = 0;
+
+  function countLoaded(node) {
+    if (node.type === "directory") totalDirs++; else totalFiles++;
+    if (node.children) node.children.forEach(countLoaded);
+  }
+  countLoaded(rootNode);
+
+  function buildDOM(node, depth, container) {
+    const isDir = node.type === "directory";
+    const row = document.createElement("div");
+    row.className = "tree-node-row";
+    row.style.paddingLeft = `${depth * 14 + 4}px`;
+    row.id = `tree-${encodeURIComponent(node.path).replace(/%/g, "_")}`;
+
+    row.innerHTML = `
+      <span>${isDir ? '📁' : '📄'}</span>
+      <span style="overflow: hidden; text-overflow: ellipsis;">${escapeHtml(node.name)}</span>
+      ${node.size ? `<span style="font-size: 10px; color: var(--text-dim); margin-left: auto;">${formatBytes(node.size)}</span>` : ''}
+    `;
+    container.appendChild(row);
+
+    if (isDir && node.children) {
+      node.children.forEach(c => buildDOM(c, depth + 1, container));
+    }
+  }
+
+  buildDOM(rootNode, 0, elements.treeBody);
+  if (elements.treeNodeStat) elements.treeNodeStat.textContent = `${totalFiles} files, ${totalDirs} dirs`;
+}
+
+async function animateStackTrace(samples) {
+  if (state.speed === "instant" || !samples || samples.length === 0) return;
+  const animStack = [];
+  const delay = SPEED_MAP[state.speed] || 150;
+
+  for (const sample of samples.slice(0, 30)) {
+    if (!state.isRunning) break;
+    if (sample.action === "PUSH") {
+      animStack.push(sample.path);
+    } else if (sample.action === "POP") {
+      animStack.pop();
+    }
+    updateStackUI(animStack);
+    await sleep(delay);
+  }
+}
+
+/* ==========================================================================
+   11. Event Listeners & Wiring
+   ========================================================================== */
+function setupEventListeners() {
+  elements.themeBtnLight.addEventListener("click", () => applyTheme("light"));
+  elements.themeBtnDark.addEventListener("click", () => applyTheme("dark"));
+  elements.toggleDevModeBtn.addEventListener("click", () => toggleDevMode());
+
+  if (elements.btnDismissWelcome) {
+    elements.btnDismissWelcome.addEventListener("click", () => {
+      elements.welcomeCard.style.display = "none";
+      localStorage.setItem("pathdiver-welcome-dismissed", "true");
+    });
+  }
+
+  elements.scopePillsBar.addEventListener("click", (e) => {
+    const pill = e.target.closest(".scope-pill");
+    if (!pill) return;
+    document.querySelectorAll(".scope-pill").forEach(p => p.classList.remove("active"));
+    pill.classList.add("active");
+
+    const scope = pill.getAttribute("data-scope");
+    if (scope === "downloads") setScopePath(state.downloadsDir || "C:\\Users\\Downloads", "Downloads");
+    else if (scope === "documents") setScopePath(state.documentsDir || "C:\\Users\\Documents", "Documents");
+    else if (scope === "desktop") setScopePath(state.desktopDir || "C:\\Users\\Desktop", "Desktop");
+    else if (scope === "pictures") setScopePath(state.picturesDir || "C:\\Users\\Pictures", "Pictures");
+    else if (scope === "drive-c") setScopePath("C:\\", "C:\\ Drive");
+    else if (scope === "all-disks") setScopePath("ALL_DRIVES", "All Disks");
+    else if (scope === "scratch") setScopePath(state.scratchDir || "C:\\", "Scratch");
+    else if (scope.startsWith("drive-")) setScopePath(pill.getAttribute("data-path"), `${scope.replace("drive-", "").toUpperCase()}:\\ Drive`);
+
+    if (state.isBackendAvailable && !state.targetPath.startsWith("virtual://")) {
+      loadRealTree(state.targetPath);
+    }
+  });
+
+  elements.btnToggleCustomPath.addEventListener("click", () => {
+    elements.customPathBar.classList.toggle("show");
+  });
+
+  elements.btnLoadCustomPath.addEventListener("click", () => {
+    const val = elements.targetFolderInput.value.trim();
+    if (val) {
+      setScopePath(val, val);
+      if (state.isBackendAvailable) loadRealTree(val);
+    }
+  });
+
+  elements.toolCards.forEach(card => {
+    card.addEventListener("click", () => {
+      const toolId = card.getAttribute("data-tool");
+      switchTool(toolId);
+    });
+  });
+
+  elements.btnMainScan.addEventListener("click", startScan);
+  elements.btnMainPause.addEventListener("click", () => {
+    state.isPaused = !state.isPaused;
+    elements.btnMainPause.textContent = state.isPaused ? "▶ Resume" : "⏸ Pause";
+  });
+  elements.btnMainStop.addEventListener("click", () => {
+    state.isRunning = false;
+    finishScan();
+  });
+
+  elements.mainSearchInput.addEventListener("input", (e) => {
+    state.searchQuery = e.target.value.trim();
+    elements.btnSearchClear.style.display = state.searchQuery ? "block" : "none";
+  });
+  elements.mainSearchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") startScan();
+  });
+  elements.btnSearchClear.addEventListener("click", () => {
+    state.searchQuery = "";
+    elements.mainSearchInput.value = "";
+    elements.btnSearchClear.style.display = "none";
+  });
+
+  elements.btnToggleFilters.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isVisible = elements.filterPopover.style.display === "flex";
+    elements.filterPopover.style.display = isVisible ? "none" : "flex";
+  });
+  document.addEventListener("click", (e) => {
+    if (!elements.filterPopover.contains(e.target) && e.target !== elements.btnToggleFilters) {
+      elements.filterPopover.style.display = "none";
+    }
+  });
+
+  elements.filterCategoryChips.addEventListener("click", (e) => {
+    const chip = e.target.closest(".filter-chip");
+    if (!chip) return;
+    document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    state.filterCategory = chip.getAttribute("data-type");
+    updateFilterBadge();
+  });
+
+  elements.toggleContentCheckbox.addEventListener("change", (e) => {
+    state.searchInsideContent = e.target.checked;
+    updateFilterBadge();
+  });
+
+  elements.btnApplyFilters.addEventListener("click", () => {
+    elements.filterPopover.style.display = "none";
+    startScan();
+  });
+  elements.btnResetFilters.addEventListener("click", () => {
+    state.filterCategory = "all";
+    state.searchInsideContent = false;
+    elements.toggleContentCheckbox.checked = false;
+    document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+    const allChip = document.querySelector('.filter-chip[data-type="all"]');
+    if (allChip) allChip.classList.add("active");
+    updateFilterBadge();
+  });
+
+  elements.speedPills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      elements.speedPills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      state.speed = pill.getAttribute("data-speed");
+      log("SYSTEM", `Traversal speed set to: ${state.speed.toUpperCase()}`);
+    });
+  });
+
+  if (elements.devTreeFilter) {
+    elements.devTreeFilter.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll(".tree-node-row").forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? "flex" : "none";
+      });
+    });
+  }
+
+  if (elements.btnClearLog) {
+    elements.btnClearLog.addEventListener("click", () => {
+      elements.logConsole.innerHTML = "";
+    });
+  }
+}
+
+function updateFilterBadge() {
+  let count = 0;
+  if (state.filterCategory !== "all") count++;
+  if (state.searchInsideContent) count++;
+  if (count > 0) {
+    elements.filterBadge.style.display = "inline-block";
+    elements.filterBadge.textContent = count;
+  } else {
+    elements.filterBadge.style.display = "none";
+  }
+}
+
+function log(tag, message) {
+  if (!elements.logConsole) return;
+  const time = new Date().toTimeString().split(' ')[0];
+  const div = document.createElement("div");
+  div.className = `log-entry log-${tag.toLowerCase()}`;
+  div.innerHTML = `<span class="log-t">[${time}]</span> <span style="font-weight: 700;">[${tag}]</span> ${escapeHtml(message)}`;
+  elements.logConsole.appendChild(div);
+  elements.logConsole.scrollTop = elements.logConsole.scrollHeight;
+}
+
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function escapeHtml(str) {
+  return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function escapeJs(str) {
+  return String(str || '').replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+window.addEventListener("DOMContentLoaded", init);
+
+</script>
+</body>
+</html>

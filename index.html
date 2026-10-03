@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PathDiver — Intelligent File Traversal & Storage Manager</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top App Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="brand-logo">🌊</div>
+        <div class="brand-text">
+          <div class="brand-title">PathDiver <span class="version-badge">v2.0</span></div>
+          <div class="brand-tagline">Find, organize and clean your files intelligently.</div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Developer View Toggle -->
+        <button id="toggle-dev-mode" class="nav-btn" title="Toggle Developer / DFS Stack View">
+          <span class="nav-btn-icon">⚙️</span>
+          <span class="nav-btn-text">Technical Details</span>
+        </button>
+
+        <!-- Segmented Light/Dark Switcher -->
+        <div class="theme-switch" role="radiogroup" aria-label="Theme switcher">
+          <button id="theme-btn-light" class="theme-seg active" data-theme="light" title="Switch to Light Theme">
+            <span>☀️</span> <span>Light</span>
+          </button>
+          <button id="theme-btn-dark" class="theme-seg" data-theme="dark" title="Switch to Dark Theme">
+            <span>🌙</span> <span>Dark</span>
+          </button>
+        </div>
+
+        <!-- Backend Status Indicator -->
+        <div class="backend-pill" id="backend-status-pill" title="Backend Status">
+          <span class="status-dot"></span>
+          <span id="backend-status-label">Connecting...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-layout">
+
+    <main class="main-content">
+
+      <!-- 1. Welcome Hero Banner (Friendly First Launch) -->
+      <section class="welcome-card" id="welcome-card">
+        <div class="welcome-left">
+          <div class="welcome-badge">👋 WELCOME TO PATHDIVER</div>
+          <h1 class="welcome-heading">Keep your storage clean, searchable & organized.</h1>
+          <p class="welcome-sub">Deep search inside documents and code, identify identical or edited duplicates, sort loose downloads with 1-click reversible undo, and reclaim developer cache space.</p>
+        </div>
+        <button class="welcome-dismiss" id="btn-dismiss-welcome" title="Dismiss banner">✕</button>
+      </section>
+
+      <!-- 2. "Choose a folder to scan" Section -->
+      <section class="section-card scope-section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="section-icon">📁</span>
+            <span>Where do you want to look?</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btn-toggle-custom-path">
+            <span>✏️ Custom Path</span>
+          </button>
+        </div>
+
+        <div class="scope-pills" id="scope-pills-bar">
+          <button class="scope-pill active" data-scope="downloads">
+            <span class="pill-icon">📥</span>
+            <span>Downloads</span>
+          </button>
+          <button class="scope-pill" data-scope="documents">
+            <span class="pill-icon">📄</span>
+            <span>Documents</span>
+          </button>
+          <button class="scope-pill" data-scope="desktop">
+            <span class="pill-icon">🖥️</span>
+            <span>Desktop</span>
+          </button>
+          <button class="scope-pill" data-scope="pictures">
+            <span class="pill-icon">🖼️</span>
+            <span>Pictures</span>
+          </button>
+          <button class="scope-pill" data-scope="drive-c">
+            <span class="pill-icon">💻</span>
+            <span>C:\ Drive</span>
+          </button>
+          <button class="scope-pill" data-scope="all-disks">
+            <span class="pill-icon">💽</span>
+            <span>All Disks</span>
+          </button>
+          <button class="scope-pill" data-scope="scratch">
+            <span class="pill-icon">🧪</span>
+            <span>Scratch</span>
+          </button>
+        </div>
+
+        <!-- Custom Path Bar (Collapsible / Expandable) -->
+        <div class="custom-path-bar" id="custom-path-bar">
+          <div class="input-wrap">
+            <span class="input-prefix">📂</span>
+            <input type="text" id="target-folder-input" class="mono-input" placeholder="Enter path e.g. C:\Users\Shareef\Projects or click a quick folder above..." value="">
+          </div>
+          <button class="btn btn-secondary" id="btn-load-custom-path">
+            <span>🔄</span> Load Path
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. "What would you like to do?" (4 Core Feature Cards) -->
+      <section class="section-card actions-section">
+        <div class="section-title" style="margin-bottom: 14px;">
+          <span class="section-icon">⚡</span>
+          <span>What would you like to do?</span>
+        </div>
+
+        <div class="action-cards-grid">
+          <!-- Card 1: Find & Peek -->
+          <div class="action-card active" data-tool="find" id="tool-card-find">
+            <div class="tool-icon-wrap tool-find">🔎</div>
+            <div class="tool-info">
+              <div class="tool-title">Find & Peek</div>
+              <div class="tool-desc">Find files quickly by name, type, or inside document text.</div>
+            </div>
+            <button class="tool-action-btn">
+              <span>Search Files</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- Card 2: Duplicate Detector -->
+          <div class="action-card" data-tool="duplicates" id="tool-card-duplicates">
+            <div class="tool-icon-wrap tool-dup">♻️</div>
+            <div class="tool-info">
+              <div class="tool-title">Duplicate Detector</div>
+              <div class="tool-desc">Detect exact copies and edited image/document drafts.</div>
+            </div>
+            <button class="tool-action-btn">
+              <span>Find Duplicates</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- Card 3: 1-Click Organizer -->
+          <div class="action-card" data-tool="organize" id="tool-card-organize">
+            <div class="tool-icon-wrap tool-organize">📂</div>
+            <div class="tool-info">
+              <div class="tool-title">1-Click Organizer</div>
+              <div class="tool-desc">Sort messy downloads into folders with 100% reversible undo.</div>
+            </div>
+            <button class="tool-action-btn">
+              <span>Organize Files</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- Card 4: Cache Sweeper -->
+          <div class="action-card" data-tool="sweeper" id="tool-card-sweeper">
+            <div class="tool-icon-wrap tool-sweeper">🧹</div>
+            <div class="tool-info">
+              <div class="tool-title">Cache Sweeper</div>
+              <div class="tool-desc">Prune node_modules, .venv, and build bloat in &lt;2s.</div>
+            </div>
+            <button class="tool-action-btn">
+              <span>Clean Cache</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Active Scan Execution & Status Card -->
+      <section class="section-card scan-control-card">
+        <div class="scan-bar-top">
+          <div class="scan-folder-info">
+            <span class="scan-status-dot ready" id="scan-status-dot"></span>
+            <div>
+              <div class="scan-folder-name" id="scan-folder-display">Downloads</div>
+              <div class="scan-folder-status" id="scan-state-label">Ready to scan</div>
+            </div>
+          </div>
+
+          <div class="scan-actions-group">
+            <button class="btn btn-primary btn-lg" id="btn-main-scan">
+              <span>▶</span> <span id="btn-scan-text">Start Scan</span>
+            </button>
+            <button class="btn btn-secondary" id="btn-main-pause" style="display: none;">
+              <span>⏸</span> Pause
+            </button>
+            <button class="btn btn-danger btn-outline" id="btn-main-stop" style="display: none;">
+              <span>⏹</span> Stop
+            </button>
+          </div>
+        </div>
+
+        <!-- Scanning Progress Bar -->
+        <div class="scan-progress-wrap" id="scan-progress-wrap" style="display: none;">
+          <div class="progress-labels">
+            <span id="scan-live-action">Scanning directories...</span>
+            <span id="scan-live-count">0 files found</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar-fill" id="scan-progress-fill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Dashboard Summary Card -->
+      <section class="section-card dashboard-card" id="dashboard-card" style="display: none;">
+        <div class="dashboard-header">
+          <div class="dash-title">
+            <span>✨</span>
+            <span>Scan Overview</span>
+          </div>
+          <div class="dash-time" id="dash-time-elapsed">0.12s</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-tile">
+            <div class="stat-icon">📄</div>
+            <div class="stat-value" id="stat-files">0</div>
+            <div class="stat-label">Files Analyzed</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon">📁</div>
+            <div class="stat-value" id="stat-folders">0</div>
+            <div class="stat-label">Directories Scanned</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon">♻️</div>
+            <div class="stat-value" id="stat-duplicates">0</div>
+            <div class="stat-label">Duplicate Clusters</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon">💾</div>
+            <div class="stat-value" id="stat-space">0 B</div>
+            <div class="stat-label">Analyzed Space</div>
+          </div>
+        </div>
+
+        <div class="dash-shortcuts-bar">
+          <span class="dash-shortcuts-label">What would you like to do?</span>
+          <div class="dash-shortcuts-btns">
+            <button class="btn btn-secondary btn-sm" onclick="switchTool('find')">🔎 Search Files</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchTool('duplicates')">♻️ Review Duplicates</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchTool('organize')">📂 Organize Loose Files</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchTool('sweeper')">🧹 Clean Developer Bloat</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Tool-Specific Interface Container -->
+      <section class="section-card tool-results-section" id="tool-results-section">
+        
+        <!-- Search & Filter Bar (Used for Find & Peek) -->
+        <div class="search-filter-wrapper" id="search-filter-wrapper">
+          <div class="search-input-box">
+            <span class="search-icon">🔎</span>
+            <input type="text" id="main-search-input" placeholder="Search files by name, extension (.pdf, .docx, .py), or content..." value="">
+            <button class="search-clear-btn" id="btn-search-clear" style="display: none;">✕</button>
+          </div>
+
+          <!-- Filter Dropdown Button -->
+          <div class="filter-dropdown-wrap">
+            <button class="btn btn-secondary" id="btn-toggle-filters">
+              <span>⚙️ Filters</span>
+              <span id="filter-active-badge" class="filter-badge" style="display: none;">1</span>
+            </button>
+
+            <!-- Floating Filter Popover -->
+            <div class="filter-popover" id="filter-popover" style="display: none;">
+              <div class="filter-popover-title">Filter Options</div>
+              
+              <div class="filter-group">
+                <label class="filter-label">File Category</label>
+                <div class="filter-chips" id="filter-category-chips">
+                  <button class="filter-chip active" data-type="all">All Files</button>
+                  <button class="filter-chip" data-type="docs">Documents (.pdf, .docx, .txt)</button>
+                  <button class="filter-chip" data-type="code">Code (.py, .js, .json, .ipynb)</button>
+                  <button class="filter-chip" data-type="images">Images (.png, .jpg, .webp)</button>
+                  <button class="filter-chip" data-type="media">Audio & Video</button>
+                  <button class="filter-chip" data-type="archives">Archives (.zip, .tar)</button>
+                </div>
+              </div>
+
+              <div class="filter-group">
+                <label class="filter-toggle-label">
+                  <input type="checkbox" id="toggle-content-search-checkbox">
+                  <div>
+                    <div style="font-weight: 600; font-size: 13px;">Search Inside Document Content</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Searches full text in PDF, DOCX, Notebooks, and Code files</div>
+                  </div>
+                </label>
+              </div>
+
+              <div class="filter-popover-actions">
+                <button class="btn btn-ghost btn-sm" id="btn-reset-filters">Reset Filters</button>
+                <button class="btn btn-primary btn-sm" id="btn-apply-filters">Apply & Search</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool Context Header (For Organizer & Sweeper Controls) -->
+        <div id="tool-sub-header"></div>
+
+        <!-- Dynamic Results List -->
+        <div class="results-wrapper" id="results-wrapper">
+          <div class="empty-state">
+            <div class="empty-icon">📂</div>
+            <div class="empty-title">Nothing scanned yet</div>
+            <div class="empty-desc">Choose a folder above and start a scan to see your files here.</div>
+            <button class="btn btn-primary btn-sm" onclick="startScan()" style="margin-top: 10px;">
+              <span>▶ Start Scan</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Advanced Technical / Developer Details -->
+      <section class="section-card dev-section" id="dev-section" style="display: none;">
+        <div class="dev-header">
+          <div class="dev-title">
+            <span>🛠️</span>
+            <span>Developer View & Explicit DFS Stack (LIFO)</span>
+          </div>
+          <div class="dev-controls">
+            <div class="speed-selector">
+              <span class="speed-title">Speed:</span>
+              <button class="speed-pill" data-speed="slow">0.5x</button>
+              <button class="speed-pill active" data-speed="normal">1x</button>
+              <button class="speed-pill" data-speed="fast">5x</button>
+              <button class="speed-pill" data-speed="instant">Instant</button>
+            </div>
+            <button class="btn btn-outline btn-sm" id="btn-step-dfs" disabled title="Step to next DFS node">
+              <span>⏭ Step</span>
+            </button>
+            <button class="btn btn-outline btn-sm" id="btn-reset-dfs">
+              <span>↺ Reset</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- LIFO Stack Visualizer -->
+        <div class="stack-box">
+          <div class="stack-box-header">
+            <span>📚 EXPLICIT DFS STACK (LIFO)</span>
+            <span class="stack-depth" id="stack-depth-label">Depth: 0 nodes</span>
+          </div>
+          <div class="stack-chips-track" id="stack-chips-track">
+            <div class="stack-empty-msg">Stack is idle. Run scan to observe push and pop operations.</div>
+          </div>
+        </div>
+
+        <!-- Directory Tree & Telemetry Log -->
+        <div class="dev-grid">
+          <div class="tree-panel">
+            <div class="tree-panel-header">
+              <span>🌲 Hierarchy Tree</span>
+              <span id="tree-node-stat" style="font-size: 11px; color: var(--text-muted);">0 items</span>
+            </div>
+            <div class="tree-search-wrap">
+              <input type="text" id="dev-tree-filter" class="tree-filter-input" placeholder="Filter tree items...">
+            </div>
+            <div class="tree-body" id="tree-body"></div>
+          </div>
+
+          <div class="log-panel">
+            <div class="log-panel-header">
+              <span>📜 Real-Time Execution Log</span>
+              <button class="btn btn-ghost btn-sm" id="btn-clear-log" style="font-size: 11px; padding: 2px 6px;">Clear</button>
+            </div>
+            <div class="log-console" id="log-console">
+              <div class="log-entry log-sys"><span class="log-t">[00:00:00]</span> PathDiver initialized. Ready for operations.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Status Bar -->
+    <footer class="status-bar">
+      <div class="status-left">
+        <span class="status-brand">PathDiver</span>
+        <span class="status-sep">|</span>
+        <span id="status-activity-text">Ready</span>
+      </div>
+      <div class="status-right">
+        <span id="status-files-scanned">0 files scanned</span>
+        <span class="status-sep">|</span>
+        <span id="status-last-scan">Last scan: Never</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
