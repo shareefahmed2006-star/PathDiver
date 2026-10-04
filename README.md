@@ -94,3 +94,21 @@ Double-click `PathDiver_Offline.html` to run in any browser with zero installati
 ## 📄 License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+
+
+## Code signing policy
+
+Free code signing provided by SignPath.io, certificate by SignPath Foundation.
+
+### Team roles
+
+- Authors / Committers: Project maintainers
+- Reviewers: Project maintainers
+- Approvers: Project maintainers
+
+### Privacy policy
+
+This program will not transfer any information to other
+networked systems unless specifically requested by the user
+or the person installing or operating it.
