@@ -103,9 +103,9 @@ Free code signing provided by SignPath.io, certificate by SignPath Foundation.
 
 ### Team roles
 
-- Authors / Committers: Project maintainers
-- Reviewers: Project maintainers
-- Approvers: Project maintainers
+- Authors / Committers: @shareefahmed2006-star
+- Reviewers: @shareefahmed2006-star
+- Approvers: @shareefahmed2006-star
 
 ### Privacy policy
 
