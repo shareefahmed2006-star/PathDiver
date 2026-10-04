@@ -86,10 +86,9 @@ Double-click `PathDiver_Offline.html` to run in any browser with zero installati
 ### Security & Privacy
 
 - 100% Local Processing: PathDiver processes files on the user's computer.
-- No External Network Communication: PathDiver does not send
-  telemetry, analytics, file data, or user information to external servers.
-- No Cloud Dependency: Core functionality works locally without
-  API keys or cloud services.
+- No External Network Communication: PathDiver does not send telemetry, analytics, file data, or user information to external servers.
+- No Cloud Dependency: Core functionality works locally without API keys or cloud services.
+- See [PRIVACY.md](PRIVACY.md) for the complete privacy policy.
 
 ---
 
@@ -97,7 +96,7 @@ Double-click `PathDiver_Offline.html` to run in any browser with zero installati
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
-
+---
 
 ## Code signing policy
 
