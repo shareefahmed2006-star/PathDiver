@@ -10,3 +10,6 @@ dist/
 .vscode/
 .idea/
 Push_To_GitHub.bat
+*.msix
+msix_payload/
+msix_build/

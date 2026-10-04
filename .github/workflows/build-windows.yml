@@ -75,3 +75,28 @@ jobs:
           name: PathDiver-Windows-Unsigned
           path: dist/PathDiver.exe
           if-no-files-found: error
+
+      - name: Package PathDiver as MSIX
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "msix_payload" -Force | Out-Null
+          Copy-Item -Path "msix\AppxManifest.xml" -Destination "msix_payload\AppxManifest.xml"
+          Copy-Item -Path "msix\Assets" -Destination "msix_payload\Assets" -Recurse
+          Copy-Item -Path "dist\PathDiver.exe" -Destination "msix_payload\PathDiver.exe"
+          
+          $makeappx = (Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Filter "makeappx.exe" -Recurse | Where-Object { $_.FullName -like "*\x64\makeappx.exe" } | Select-Object -First 1).FullName
+          Write-Host "Using makeappx: $makeappx"
+          & $makeappx pack /d "msix_payload" /p "dist\PathDiver.msix" /nv
+          
+          if (-not (Test-Path "dist\PathDiver.msix")) {
+            Write-Error "PathDiver.msix was not created."
+            exit 1
+          }
+          Write-Host "PathDiver.msix created successfully."
+
+      - name: Upload MSIX Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: PathDiver-Windows-MSIX
+          path: dist/PathDiver.msix
+          if-no-files-found: error
